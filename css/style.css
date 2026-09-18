@@ -1,0 +1,1152 @@
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+
+    padding:
+        0
+        0
+        calc(82px + env(safe-area-inset-bottom))
+        0;
+
+    background: #f3f4f6;
+    color: #111827;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    font-size: 16px;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    touch-action: manipulation;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+input {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    padding:
+        calc(14px + env(safe-area-inset-top))
+        16px
+        14px;
+
+    background: #111827;
+    color: white;
+
+    text-align: center;
+}
+
+.app-header h1 {
+    margin: 0;
+    font-size: 21px;
+}
+
+
+/* =====================================================
+   MAIN
+   ===================================================== */
+
+.app-content {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 14px;
+}
+
+
+/* =====================================================
+   SCREENS
+   ===================================================== */
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+
+/* =====================================================
+   CARDS
+   ===================================================== */
+
+.card {
+    margin-bottom: 14px;
+    padding: 16px;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+.card h2 {
+    margin: 0 0 8px;
+    font-size: 19px;
+}
+
+.card h3 {
+    margin: 18px 0 10px;
+    font-size: 16px;
+}
+
+
+/* =====================================================
+   TEXT
+   ===================================================== */
+
+.muted {
+    margin: 0 0 14px;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+.small-label {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #6b7280;
+
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+
+/* =====================================================
+   HOME
+   ===================================================== */
+
+.home-welcome {
+    text-align: center;
+}
+
+.home-welcome h2 {
+    margin-bottom: 5px;
+}
+
+.home-welcome .muted {
+    margin-bottom: 18px;
+}
+
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 8px;
+
+    margin-bottom: 14px;
+}
+
+.stat-card {
+    display: flex;
+
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 94px;
+    padding: 10px;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 13px;
+
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+
+    font-size: 28px;
+    font-weight: 800;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #6b7280;
+
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+
+/* =====================================================
+   FORMS
+   ===================================================== */
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-weight: 600;
+}
+
+input[type="text"],
+input[type="date"] {
+    width: 100%;
+    min-height: 48px;
+
+    padding: 11px 13px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+
+    background: white;
+    color: #111827;
+
+    font-size: 16px;
+}
+
+input:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 1px;
+}
+
+
+/* =====================================================
+   ADD PLAYER
+   ===================================================== */
+
+.add-player-row {
+    display: flex;
+    gap: 8px;
+}
+
+.add-player-row input {
+    min-width: 0;
+    flex: 1;
+}
+
+.add-player-row button {
+    flex: 0 0 auto;
+}
+
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+
+.primary-button,
+.secondary-button,
+.danger-button,
+.action-button,
+.close-button,
+.role-button {
+    min-height: 46px;
+
+    border: 0;
+    border-radius: 10px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.primary-button {
+    padding: 10px 17px;
+
+    background: #2563eb;
+    color: white;
+}
+
+.primary-button:active {
+    background: #1d4ed8;
+}
+
+.secondary-button {
+    padding: 10px 15px;
+
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.secondary-button:active {
+    background: #d1d5db;
+}
+
+.danger-button {
+    padding: 10px 17px;
+
+    background: #dc2626;
+    color: white;
+}
+
+.danger-button:active {
+    background: #b91c1c;
+}
+
+.large-button {
+    width: 100%;
+    min-height: 52px;
+
+    font-size: 17px;
+}
+
+
+/* =====================================================
+   SECTION HEADINGS
+   ===================================================== */
+
+.section-heading-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.section-heading-row h2,
+.section-heading-row h3 {
+    margin: 0;
+}
+
+.count-badge,
+.live-indicator {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 30px;
+    min-height: 26px;
+
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    background: #e5e7eb;
+    color: #374151;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.live-indicator {
+    background: #dcfce7;
+    color: #166534;
+}
+
+
+/* =====================================================
+   PLAYER LIST
+   ===================================================== */
+
+.player-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.player-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    min-height: 48px;
+    padding: 8px 10px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.player-name {
+    min-width: 0;
+    flex: 1;
+
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.delete-player-button {
+    flex: 0 0 auto;
+
+    width: 40px;
+    height: 40px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: #fee2e2;
+    color: #b91c1c;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   SELECTION GRID
+   ===================================================== */
+
+.selection-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+}
+
+.selection-button {
+    position: relative;
+
+    min-height: 48px;
+
+    padding: 9px 10px;
+
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: white;
+    color: #111827;
+
+    font-weight: 600;
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.selection-button.selected {
+    border-color: #2563eb;
+
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.selection-button.highlighted {
+    border-color: #16a34a;
+
+    background: #dcfce7;
+    color: #166534;
+}
+
+.selection-button:active {
+    transform: scale(0.98);
+}
+
+.selection-button .player-button-name {
+    display: block;
+
+    padding-right: 25px;
+}
+
+.selection-button .selection-icon {
+    position: absolute;
+
+    right: 9px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   LIVE HEADER
+   ===================================================== */
+
+.live-header {
+    display: grid;
+
+    grid-template-columns:
+        1fr auto 1fr;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.live-opponent {
+    min-width: 0;
+}
+
+.live-opponent strong {
+    display: block;
+
+    overflow-wrap: anywhere;
+}
+
+.live-score {
+    font-size: 28px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.live-half {
+    color: #6b7280;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-align: right;
+}
+
+
+/* =====================================================
+   TIMER
+   ===================================================== */
+
+.timer-card {
+    text-align: center;
+}
+
+.timer {
+    margin: 2px 0 15px;
+
+    font-variant-numeric: tabular-nums;
+
+    font-size: clamp(42px, 13vw, 64px);
+    font-weight: 800;
+
+    letter-spacing: 0.03em;
+}
+
+.live-controls {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+}
+
+
+/* =====================================================
+   LIVE ACTIONS
+   ===================================================== */
+
+.live-action-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 8px;
+}
+
+.action-button {
+    min-height: 52px;
+
+    padding: 8px;
+
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.action-button:active {
+    background: #d1d5db;
+}
+
+.goal-action {
+    background: #dcfce7;
+    color: #166534;
+}
+
+
+/* =====================================================
+   ACTION PANELS
+   ===================================================== */
+
+.action-panel {
+    border: 2px solid #dbeafe;
+}
+
+.panel-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.panel-header h2 {
+    margin: 0;
+}
+
+.close-button {
+    min-height: 40px;
+
+    padding: 7px 12px;
+
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =====================================================
+   GOALS / SUBSTITUTIONS
+   ===================================================== */
+
+.selected-scorer-box {
+    margin: 14px 0;
+
+    padding: 11px 13px;
+
+    border-radius: 10px;
+
+    background: #f0fdf4;
+
+    border: 1px solid #bbf7d0;
+}
+
+.selected-scorer-box strong {
+    display: block;
+
+    color: #166534;
+}
+
+.assist-section {
+    margin-top: 4px;
+}
+
+
+/* =====================================================
+   SUBSTITUTION ROLE
+   ===================================================== */
+
+.role-choice {
+    margin-top: 10px;
+}
+
+.role-choice-grid {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+}
+
+.role-button {
+    min-height: 52px;
+
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.role-button:active {
+    background: #d1d5db;
+}
+
+
+/* =====================================================
+   LIVE STATS
+   ===================================================== */
+
+.live-stats-header,
+.live-stats-row {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        58px
+        58px
+        58px
+        34px
+        34px;
+
+    align-items: center;
+
+    gap: 4px;
+}
+
+.live-stats-header {
+    padding: 7px 8px;
+
+    color: #6b7280;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-align: right;
+    text-transform: uppercase;
+}
+
+.live-stats-header span:first-child {
+    text-align: left;
+}
+
+.live-stats-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+.live-stats-row {
+    min-height: 52px;
+
+    padding: 7px 8px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: #fafafa;
+
+    font-size: 13px;
+
+    text-align: right;
+}
+
+.live-stats-row.on-pitch {
+    border-left: 4px solid #16a34a;
+
+    background: #f0fdf4;
+}
+
+.live-stats-player {
+    min-width: 0;
+
+    text-align: left;
+}
+
+.live-stats-player-name {
+    display: block;
+
+    font-weight: 700;
+
+    overflow-wrap: anywhere;
+}
+
+.live-stats-player-status {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #6b7280;
+
+    font-size: 10px;
+}
+
+.live-stat-value {
+    font-variant-numeric: tabular-nums;
+
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   FINISH
+   ===================================================== */
+
+.finish-card {
+    margin-top: 18px;
+}
+
+
+/* =====================================================
+   HISTORY
+   ===================================================== */
+
+.history-empty {
+    padding: 20px 5px;
+
+    color: #6b7280;
+
+    text-align: center;
+}
+
+.history-match {
+    margin-bottom: 12px;
+
+    padding: 14px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 11px;
+}
+
+.history-match:last-child {
+    margin-bottom: 0;
+}
+
+.history-match-header {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.history-match-title {
+    min-width: 0;
+}
+
+.history-match-title strong {
+    display: block;
+
+    overflow-wrap: anywhere;
+}
+
+.history-match-date {
+    margin-top: 3px;
+
+    color: #6b7280;
+
+    font-size: 13px;
+}
+
+.history-score {
+    flex: 0 0 auto;
+
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.history-details {
+    margin-top: 12px;
+}
+
+.history-player-row {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto
+        auto
+        auto
+        auto;
+
+    gap: 7px;
+
+    align-items: center;
+
+    padding: 7px 0;
+
+    border-top: 1px solid #f3f4f6;
+
+    font-size: 12px;
+}
+
+.history-player-name {
+    min-width: 0;
+
+    overflow-wrap: anywhere;
+
+    font-weight: 600;
+}
+
+.history-stat {
+    min-width: 43px;
+
+    text-align: right;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.history-event-summary {
+    margin-top: 12px;
+
+    padding-top: 10px;
+
+    border-top: 1px solid #e5e7eb;
+
+    color: #4b5563;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.history-actions {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+
+    margin-top: 12px;
+}
+
+.delete-match-button {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+
+/* =====================================================
+   HOME RECENT MATCHES
+   ===================================================== */
+
+.recent-match {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding: 11px 0;
+
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.recent-match:last-child {
+    border-bottom: 0;
+}
+
+.recent-match-name {
+    min-width: 0;
+
+    font-weight: 600;
+}
+
+.recent-match-date {
+    margin-top: 3px;
+
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+.recent-match-score {
+    flex: 0 0 auto;
+
+    font-weight: 800;
+}
+
+
+/* =====================================================
+   BOTTOM NAV
+   ===================================================== */
+
+.bottom-nav {
+    position: fixed;
+
+    z-index: 200;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    padding:
+        7px
+        8px
+        calc(7px + env(safe-area-inset-bottom));
+
+    background: rgba(255, 255, 255, 0.97);
+
+    border-top: 1px solid #d1d5db;
+
+    box-shadow:
+        0 -2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.nav-button {
+    min-height: 55px;
+
+    display: flex;
+
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 2px;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #6b7280;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.nav-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.nav-button.active {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+
+/* =====================================================
+   TABLET
+   ===================================================== */
+
+@media (min-width: 600px) {
+
+    .app-content {
+        padding: 20px;
+    }
+
+    .selection-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =====================================================
+   SMALL PHONES
+   ===================================================== */
+
+@media (max-width: 430px) {
+
+    .app-content {
+        padding: 10px;
+    }
+
+    .card {
+        padding: 13px;
+
+        border-radius: 12px;
+    }
+
+    .selection-grid {
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 6px;
+    }
+
+    .selection-button {
+        min-height: 46px;
+
+        padding: 8px;
+
+        font-size: 14px;
+    }
+
+    .live-action-grid {
+        gap: 6px;
+    }
+
+    .action-button {
+        min-height: 48px;
+
+        font-size: 13px;
+    }
+
+    .live-score {
+        font-size: 24px;
+    }
+
+    .live-stats-header,
+    .live-stats-row {
+        grid-template-columns:
+            minmax(0, 1fr)
+            47px
+            47px
+            47px
+            28px
+            28px;
+
+        gap: 2px;
+    }
+
+    .live-stats-row {
+        padding-left: 6px;
+        padding-right: 6px;
+
+        font-size: 11px;
+    }
+
+    .live-stats-header {
+        font-size: 9px;
+    }
+
+    .history-player-row {
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto
+            auto
+            auto
+            auto;
+
+        gap: 4px;
+
+        font-size: 10px;
+    }
+
+    .history-stat {
+        min-width: 32px;
+    }
+
+    .history-actions {
+        grid-template-columns: 1fr;
+    }
+
+}
