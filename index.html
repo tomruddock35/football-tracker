@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <title>Football Tracker</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="app-header">
+    <h1>⚽ Football Tracker</h1>
+</header>
+
+
+<main class="app-content">
+
+    <!-- =====================================================
+         HOME
+         ===================================================== -->
+
+    <section id="homeScreen" class="screen active">
+
+        <div class="card home-welcome">
+
+            <h2>Welcome</h2>
+
+            <p class="muted">
+                Track your matches, player minutes, goals and assists.
+            </p>
+
+            <button
+                type="button"
+                id="homeNewMatchBtn"
+                class="primary-button large-button"
+            >
+                ⚽ Start New Match
+            </button>
+
+        </div>
+
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <span class="stat-value" id="homeMatchCount">0</span>
+                <span class="stat-label">Matches</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-value" id="homeGoalCount">0</span>
+                <span class="stat-label">Goals</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-value" id="homeAssistCount">0</span>
+                <span class="stat-label">Assists</span>
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="section-heading-row">
+                <h2>Recent Matches</h2>
+            </div>
+
+            <div id="homeRecentMatches"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SQUAD
+         ===================================================== -->
+
+    <section id="squadScreen" class="screen">
+
+        <div class="card">
+
+            <h2>Squad</h2>
+
+            <p class="muted">
+                Add and manage your players.
+            </p>
+
+            <div class="add-player-row">
+
+                <input
+                    type="text"
+                    id="playerName"
+                    placeholder="Player name"
+                    autocomplete="off"
+                >
+
+                <button
+                    type="button"
+                    id="addPlayerBtn"
+                    class="primary-button"
+                >
+                    Add
+                </button>
+
+            </div>
+
+
+            <div class="section-heading-row">
+                <h3>Players</h3>
+
+                <span
+                    id="playerCount"
+                    class="count-badge"
+                >
+                    0
+                </span>
+            </div>
+
+
+            <div id="playerList" class="player-list"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         NEW MATCH
+         ===================================================== -->
+
+    <section id="newMatchScreen" class="screen">
+
+        <div class="card">
+
+            <h2>New Match</h2>
+
+            <div class="form-group">
+
+                <label for="opponent">
+                    Opponent
+                </label>
+
+                <input
+                    type="text"
+                    id="opponent"
+                    placeholder="Opponent name"
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="matchDate">
+                    Match date
+                </label>
+
+                <input
+                    type="date"
+                    id="matchDate"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="section-heading-row">
+
+                <h2>Matchday Squad</h2>
+
+                <span
+                    id="squadSelectionCount"
+                    class="count-badge"
+                >
+                    0
+                </span>
+
+            </div>
+
+            <p class="muted">
+                Tap the players selected for the match.
+            </p>
+
+            <div
+                id="squadSelection"
+                class="selection-grid"
+            ></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="section-heading-row">
+
+                <h2>Starting Five</h2>
+
+                <span
+                    id="startingSelectionCount"
+                    class="count-badge"
+                >
+                    0 / 5
+                </span>
+
+            </div>
+
+            <p class="muted">
+                Select the five players starting the match.
+            </p>
+
+            <div
+                id="startingSelection"
+                class="selection-grid"
+            ></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>Goalkeeper</h2>
+
+            <p class="muted">
+                Select the goalkeeper starting the match.
+            </p>
+
+            <div
+                id="goalkeeperSelection"
+                class="selection-grid"
+            ></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>Captain</h2>
+
+            <p class="muted">
+                Select the captain.
+            </p>
+
+            <div
+                id="captainSelection"
+                class="selection-grid"
+            ></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <button
+                type="button"
+                id="startMatchBtn"
+                class="primary-button large-button"
+            >
+                Start Match
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         LIVE MATCH
+         ===================================================== -->
+
+    <section id="liveScreen" class="screen">
+
+        <div class="live-header card">
+
+            <div class="live-opponent">
+
+                <span class="small-label">
+                    Opponent
+                </span>
+
+                <strong id="liveOpponent">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div
+                class="live-score"
+                id="liveScore"
+            >
+                0 - 0
+            </div>
+
+
+            <div class="live-half">
+
+                <span id="halfLabel">
+                    1st Half
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="card timer-card">
+
+            <div
+                id="timer"
+                class="timer"
+            >
+                00:00
+            </div>
+
+
+            <div class="live-controls">
+
+                <button
+                    type="button"
+                    id="pauseBtn"
+                    class="secondary-button"
+                >
+                    Pause
+                </button>
+
+                <button
+                    type="button"
+                    id="halfTimeBtn"
+                    class="secondary-button"
+                >
+                    Half Time
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="live-action-grid">
+
+                <button
+                    type="button"
+                    id="goalBtn"
+                    class="action-button goal-action"
+                >
+                    ⚽ Goal
+                </button>
+
+
+                <button
+                    type="button"
+                    id="substitutionBtn"
+                    class="action-button"
+                >
+                    🔄 Substitution
+                </button>
+
+
+                <button
+                    type="button"
+                    id="undoBtn"
+                    class="action-button"
+                >
+                    ↩ Undo
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- GOAL PANEL -->
+
+        <div
+            id="goalPanel"
+            class="card action-panel hidden"
+        >
+
+            <div class="panel-header">
+
+                <h2>Goal</h2>
+
+                <button
+                    type="button"
+                    id="cancelGoalBtn"
+                    class="close-button"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+
+            <h3>Goalscorer</h3>
+
+            <div
+                id="goalScorerButtons"
+                class="selection-grid"
+            ></div>
+
+
+            <div
+                id="assistSection"
+                class="assist-section hidden"
+            >
+
+                <div class="selected-scorer-box">
+
+                    <span class="small-label">
+                        Goalscorer
+                    </span>
+
+                    <strong id="selectedScorerName">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <h3>Assist</h3>
+
+                <div
+                    id="assistButtons"
+                    class="selection-grid"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUBSTITUTION PANEL -->
+
+        <div
+            id="substitutionPanel"
+            class="card action-panel hidden"
+        >
+
+            <div class="panel-header">
+
+                <h2>Substitution</h2>
+
+                <button
+                    type="button"
+                    id="cancelSubstitutionBtn"
+                    class="close-button"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+
+            <h3>Player coming off</h3>
+
+            <div
+                id="substitutionOffButtons"
+                class="selection-grid"
+            ></div>
+
+
+            <div
+                id="substitutionOnStep"
+                class="hidden"
+            >
+
+                <div class="selected-scorer-box">
+
+                    <span class="small-label">
+                        Coming off
+                    </span>
+
+                    <strong id="selectedPlayerOff">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <h3>Player coming on</h3>
+
+                <div
+                    id="substitutionOnButtons"
+                    class="selection-grid"
+                ></div>
+
+
+                <div
+                    id="substitutionRoleStep"
+                    class="role-choice hidden"
+                >
+
+                    <h3>Playing position</h3>
+
+                    <p class="muted">
+                        What position will this player play?
+                    </p>
+
+                    <div class="role-choice-grid">
+
+                        <button
+                            type="button"
+                            id="substitutionOutfieldBtn"
+                            class="role-button"
+                        >
+                            ⚽ Outfield
+                        </button>
+
+                        <button
+                            type="button"
+                            id="substitutionGoalkeeperBtn"
+                            class="role-button"
+                        >
+                            🧤 Goalkeeper
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- LIVE PLAYER STATS -->
+
+        <div class="card">
+
+            <div class="section-heading-row">
+
+                <h2>Player Stats</h2>
+
+                <span class="live-indicator">
+                    LIVE
+                </span>
+
+            </div>
+
+            <p class="muted">
+                Current minutes, goals and assists in this match.
+            </p>
+
+
+            <div class="live-stats-header">
+
+                <span>Player</span>
+
+                <span>Min</span>
+
+                <span>Out</span>
+
+                <span>GK</span>
+
+                <span>⚽</span>
+
+                <span>👟</span>
+
+            </div>
+
+
+            <div
+                id="liveStatsList"
+                class="live-stats-list"
+            ></div>
+
+        </div>
+
+
+        <div class="card finish-card">
+
+            <button
+                type="button"
+                id="finishMatchBtn"
+                class="danger-button large-button"
+            >
+                Finish & Save Match
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         HISTORY
+         ===================================================== -->
+
+    <section id="historyScreen" class="screen">
+
+        <div class="card">
+
+            <h2>Match History</h2>
+
+            <div id="matchHistory"></div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     BOTTOM NAVIGATION
+     ===================================================== -->
+
+<nav class="bottom-nav">
+
+    <button
+        type="button"
+        class="nav-button active"
+        data-screen="homeScreen"
+    >
+        <span class="nav-icon">🏠</span>
+        <span>Home</span>
+    </button>
+
+
+    <button
+        type="button"
+        class="nav-button"
+        data-screen="squadScreen"
+    >
+        <span class="nav-icon">👥</span>
+        <span>Squad</span>
+    </button>
+
+
+    <button
+        type="button"
+        class="nav-button"
+        data-screen="newMatchScreen"
+    >
+        <span class="nav-icon">⚽</span>
+        <span>New Match</span>
+    </button>
+
+
+    <button
+        type="button"
+        class="nav-button"
+        data-screen="historyScreen"
+    >
+        <span class="nav-icon">📋</span>
+        <span>History</span>
+    </button>
+
+</nav>
+
+
+<script src="js/app.js"></script>
+
+</body>
+</html>
