@@ -170,7 +170,7 @@ input {
     display: grid;
 
     grid-template-columns:
-        repeat(3, minmax(0, 1fr));
+        repeat(2, minmax(0, 1fr));
 
     gap: 8px;
 
@@ -342,6 +342,27 @@ input:focus {
 /* =====================================================
    SECTION HEADINGS
    ===================================================== */
+
+.section-heading-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.small-button {
+    min-height: 38px;
+    padding: 7px 10px;
+    font-size: 13px;
+}
+
+.substitution-choice-label {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #4b5563;
+}
 
 .section-heading-row {
     display: flex;
@@ -584,7 +605,7 @@ input:focus {
     display: grid;
 
     grid-template-columns:
-        repeat(3, minmax(0, 1fr));
+        repeat(2, minmax(0, 1fr));
 
     gap: 8px;
 }
@@ -605,6 +626,11 @@ input:focus {
 .goal-action {
     background: #dcfce7;
     color: #166534;
+}
+
+.opponent-goal-action {
+    background: #fee2e2;
+    color: #991b1b;
 }
 
 

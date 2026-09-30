@@ -191,12 +191,22 @@
 
                 <h2>Matchday Squad</h2>
 
-                <span
-                    id="squadSelectionCount"
-                    class="count-badge"
-                >
-                    0
-                </span>
+                <div class="section-heading-actions">
+                    <span
+                        id="squadSelectionCount"
+                        class="count-badge"
+                    >
+                        0
+                    </span>
+
+                    <button
+                        type="button"
+                        id="copyLastSquadBtn"
+                        class="secondary-button small-button"
+                    >
+                        Copy Last Squad
+                    </button>
+                </div>
 
             </div>
 
@@ -368,7 +378,16 @@
                     id="goalBtn"
                     class="action-button goal-action"
                 >
-                    ⚽ Goal
+                    ⚽ Our Goal
+                </button>
+
+
+                <button
+                    type="button"
+                    id="opponentGoalBtn"
+                    class="action-button opponent-goal-action"
+                >
+                    🔴 Opponent Goal
                 </button>
 
 
@@ -571,7 +590,7 @@
 
                 <span>Player</span>
 
-                <span>Min</span>
+                <span>Day</span>
 
                 <span>Out</span>
 

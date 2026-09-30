@@ -580,6 +580,37 @@ function resetMatchSetup() {
 }
 
 
+function copyLastMatchdaySquad() {
+
+    const matches = getMatches();
+
+    if (!matches.length) {
+        alert("There is no previous match squad to copy yet.");
+        return;
+    }
+
+    const lastMatch = matches[0];
+    const availablePlayerIds = new Set(getPlayers().map(function (player) {
+        return player.id;
+    }));
+
+    state.setup.matchdaySquad = (lastMatch.matchdaySquad || [])
+        .filter(function (playerId) {
+            return availablePlayerIds.has(playerId);
+        });
+
+    state.setup.startingFive = [];
+    state.setup.goalkeeper = null;
+    state.setup.captain = null;
+
+    // Copy the opposition as well as the previous matchday squad.
+    $("opponent").value = lastMatch.opponent || "";
+
+    // Keep the new match date as currently selected.
+    renderMatchSetup();
+}
+
+
 function toggleMatchdayPlayer(playerId) {
 
     const index =
@@ -1119,6 +1150,8 @@ function startMatch() {
 
         elapsedSeconds: 0,
 
+        halfElapsedSeconds: 0,
+
         running: true,
 
         finished: false,
@@ -1239,6 +1272,8 @@ function startTimer() {
 
 
                 currentMatch.elapsedSeconds += 1;
+                currentMatch.halfElapsedSeconds =
+                    (currentMatch.halfElapsedSeconds || 0) + 1;
 
 
                 saveCurrentMatch(
@@ -1336,7 +1371,9 @@ function updateTimerDisplay() {
 
     $("timer").textContent =
         formatTime(
-            match.elapsedSeconds
+            match.halfElapsedSeconds !== undefined
+            ? match.halfElapsedSeconds
+            : match.elapsedSeconds
         );
 }
 
@@ -1374,6 +1411,8 @@ function recordHalfTime() {
     stopTimer();
 
     match.half = 2;
+
+    match.halfElapsedSeconds = 0;
 
 
     match.events.push({
@@ -1482,8 +1521,11 @@ function renderGoalScorerButtons() {
     }
 
 
+    const playersCurrentlyOnPitch =
+        getPlayersCurrentlyOnPitch(match);
+
     $("goalScorerButtons").innerHTML =
-        match.matchdaySquad
+        playersCurrentlyOnPitch
             .map(function (playerId) {
 
                 const selected =
@@ -1581,7 +1623,7 @@ function renderAssistButtons() {
 
 
     const players =
-        match.matchdaySquad.filter(
+        getPlayersCurrentlyOnPitch(match).filter(
             function (playerId) {
 
                 return (
@@ -1663,6 +1705,30 @@ function renderAssistButtons() {
             );
 
         });
+}
+
+
+function recordOpponentGoal() {
+
+    const match = getCurrentMatch();
+
+    if (!match || match.finished) return;
+
+    if (!match.running) {
+        alert("Resume the match before recording a goal.");
+        return;
+    }
+
+    match.score.them += 1;
+
+    match.events.push({
+        id: generateId(),
+        type: "opponentGoal",
+        elapsedSeconds: match.elapsedSeconds
+    });
+
+    saveCurrentMatch(match);
+    renderLiveMatch();
 }
 
 
@@ -1973,53 +2039,76 @@ function renderSubstitutionOnButtons() {
             match
         );
 
+    const outgoingTime =
+        match.playerTimes[state.substitutionOff];
 
-    const availablePlayers =
-        playersOff.filter(
-            function (playerId) {
+    const outgoingIsGoalkeeper =
+        outgoingTime &&
+        outgoingTime.activeRole === "goalkeeper";
 
-                return (
-                    playerId !==
-                    state.substitutionOff
-                );
+    const playersOnPitch =
+        getPlayersCurrentlyOnPitch(match)
+            .filter(function (playerId) {
+                return playerId !== state.substitutionOff;
+            });
 
-            }
-        );
+    const benchPlayers =
+        playersOff.filter(function (playerId) {
+            return playerId !== state.substitutionOff;
+        });
 
+    let buttons = "";
 
-    $("substitutionOnButtons").innerHTML =
-        availablePlayers
-            .map(function (playerId) {
+    if (outgoingIsGoalkeeper && playersOnPitch.length > 0) {
+        buttons += `
+            <div class="substitution-choice-label">
+                Swap with a current outfield player
+            </div>
+        `;
 
-                return `
-                    <button
-                        type="button"
-                        class="selection-button"
-                        data-sub-on="${playerId}"
-                    >
+        buttons += playersOnPitch.map(function (playerId) {
+            return `
+                <button
+                    type="button"
+                    class="selection-button"
+                    data-sub-on="${playerId}"
+                >
+                    <span class="player-button-name">
+                        ${escapeHtml(getPlayerName(playerId))} 🧤
+                    </span>
+                </button>
+            `;
+        }).join("");
+    }
 
-                        <span class="player-button-name">
-                            ${escapeHtml(
-                                getPlayerName(
-                                    playerId
-                                )
-                            )}
-                        </span>
+    if (benchPlayers.length > 0) {
+        if (outgoingIsGoalkeeper && playersOnPitch.length > 0) {
+            buttons += `
+                <div class="substitution-choice-label">
+                    Or substitute with a bench player
+                </div>
+            `;
+        }
 
-                    </button>
-                `;
+        buttons += benchPlayers.map(function (playerId) {
+            return `
+                <button
+                    type="button"
+                    class="selection-button"
+                    data-sub-on="${playerId}"
+                >
+                    <span class="player-button-name">
+                        ${escapeHtml(getPlayerName(playerId))}
+                    </span>
+                </button>
+            `;
+        }).join("");
+    }
 
-            })
-            .join("");
+    $("substitutionOnButtons").innerHTML = buttons ||
+        '<div class="history-empty">No available players for this substitution.</div>';
 
-
-    if (
-        availablePlayers.length === 0
-    ) {
-
-        $("substitutionOnButtons").innerHTML =
-            '<div class="history-empty">No available players on the bench.</div>';
-
+    if (!buttons) {
         return;
     }
 
@@ -2057,13 +2146,25 @@ function selectSubstitutionOn(playerId) {
     state.substitutionOn =
         playerId;
 
-    /*
-     * Default to the outgoing player's role. The user can
-     * change this before confirming the substitution.
-     */
     const outgoingRole =
         match.playerTimes[state.substitutionOff]?.activeRole ||
         "outfield";
+
+    const incomingTime =
+        match.playerTimes[playerId];
+
+    if (
+        outgoingRole === "goalkeeper" &&
+        incomingTime &&
+        incomingTime.activeStart !== null &&
+        incomingTime.activeRole === "outfield"
+    ) {
+        recordGoalkeeperSwap(
+            state.substitutionOff,
+            state.substitutionOn
+        );
+        return;
+    }
 
     $("substitutionRoleStep")
         .classList
@@ -2086,6 +2187,75 @@ function selectSubstitutionOn(playerId) {
             "highlighted",
             outgoingRole === "goalkeeper"
         );
+}
+
+
+function recordGoalkeeperSwap(playerOffId, playerOnId) {
+
+    const match = getCurrentMatch();
+
+    if (
+        !match ||
+        match.finished ||
+        !playerOffId ||
+        !playerOnId ||
+        playerOffId === playerOnId
+    ) {
+        return;
+    }
+
+    ensurePlayerTimeObject(match, playerOffId);
+    ensurePlayerTimeObject(match, playerOnId);
+
+    const goalkeeperTime = match.playerTimes[playerOffId];
+    const outfieldTime = match.playerTimes[playerOnId];
+
+    if (
+        goalkeeperTime.activeStart === null ||
+        goalkeeperTime.activeRole !== "goalkeeper" ||
+        outfieldTime.activeStart === null ||
+        outfieldTime.activeRole !== "outfield"
+    ) {
+        return;
+    }
+
+    const time = match.elapsedSeconds;
+
+    goalkeeperTime.intervals.push({
+        start: goalkeeperTime.activeStart,
+        end: time,
+        role: "goalkeeper"
+    });
+
+    outfieldTime.intervals.push({
+        start: outfieldTime.activeStart,
+        end: time,
+        role: "outfield"
+    });
+
+    goalkeeperTime.activeStart = time;
+    goalkeeperTime.activeRole = "outfield";
+
+    outfieldTime.activeStart = time;
+    outfieldTime.activeRole = "goalkeeper";
+
+    match.currentGoalkeeperId = playerOnId;
+
+    match.events.push({
+        id: generateId(),
+        type: "substitution",
+        swap: true,
+        elapsedSeconds: time,
+        playerOff: playerOffId,
+        playerOn: playerOnId,
+        role: "goalkeeper",
+        playerOffRole: "goalkeeper",
+        playerOnRole: "outfield"
+    });
+
+    saveCurrentMatch(match);
+    closeSubstitutionPanel();
+    renderLiveMatch();
 }
 
 
@@ -2416,49 +2586,69 @@ function rebuildPlayerTimes(match) {
     });
 
     (match.startingFive || []).forEach(function (playerId) {
-        if (!match.playerTimes[playerId]) {
-            return;
-        }
+        if (!match.playerTimes[playerId]) return;
 
         match.playerTimes[playerId].activeStart = 0;
         match.playerTimes[playerId].activeRole =
-            playerId === match.goalkeeper
-                ? "goalkeeper"
-                : "outfield";
+            playerId === match.goalkeeper ? "goalkeeper" : "outfield";
     });
 
-    let currentGoalkeeperId =
-        match.goalkeeper ||
-        null;
+    let currentGoalkeeperId = match.goalkeeper || null;
 
-    const substitutionEvents =
-        (match.events || [])
-            .filter(function (event) {
-                return event.type === "substitution";
-            })
-            .sort(function (a, b) {
-                return (a.elapsedSeconds || 0) - (b.elapsedSeconds || 0);
-            });
+    const substitutionEvents = (match.events || [])
+        .filter(function (event) {
+            return event.type === "substitution";
+        })
+        .sort(function (a, b) {
+            return (a.elapsedSeconds || 0) - (b.elapsedSeconds || 0);
+        });
 
     substitutionEvents.forEach(function (event) {
         const offId = event.playerOff;
         const onId = event.playerOn;
+        const time = Number(event.elapsedSeconds || 0);
 
-        if (!offId || !onId) {
-            return;
-        }
+        if (!offId || !onId) return;
 
         ensurePlayerTimeObject(match, offId);
         ensurePlayerTimeObject(match, onId);
 
         const off = match.playerTimes[offId];
         const on = match.playerTimes[onId];
-        const time = Number(event.elapsedSeconds || 0);
+
+        if (event.swap) {
+            if (
+                off.activeStart !== null &&
+                off.activeRole === "goalkeeper" &&
+                on.activeStart !== null &&
+                on.activeRole === "outfield"
+            ) {
+                off.intervals.push({
+                    start: off.activeStart,
+                    end: time,
+                    role: "goalkeeper"
+                });
+
+                on.intervals.push({
+                    start: on.activeStart,
+                    end: time,
+                    role: "outfield"
+                });
+
+                off.activeStart = time;
+                off.activeRole = "outfield";
+                on.activeStart = time;
+                on.activeRole = "goalkeeper";
+                currentGoalkeeperId = onId;
+            }
+            return;
+        }
+
         const role = event.role ||
             (offId === currentGoalkeeperId ? "goalkeeper" : "outfield");
 
-        /* Incoming goalkeeper replaces the role of the current GK
-           even when the current GK is not the player coming off. */
+        /* If an incoming player becomes goalkeeper, the current GK
+           changes to outfield at exactly the same match time. */
         if (
             role === "goalkeeper" &&
             currentGoalkeeperId &&
@@ -2486,10 +2676,8 @@ function rebuildPlayerTimes(match) {
             off.intervals.push({
                 start: off.activeStart,
                 end: time,
-                role: off.activeRole ||
-                    (offId === currentGoalkeeperId ? "goalkeeper" : "outfield")
+                role: off.activeRole || role
             });
-
             off.activeStart = null;
             off.activeRole = null;
         }
@@ -2560,12 +2748,25 @@ function undoLastEvent() {
 
     }
 
+    if (
+        event.type === "opponentGoal"
+    ) {
+
+        match.score.them =
+            Math.max(
+                0,
+                match.score.them - 1
+            );
+
+    }
+
 
     if (
         event.type === "halfTime"
     ) {
 
         match.half = 1;
+        match.halfElapsedSeconds = match.elapsedSeconds || 0;
 
     }
 
@@ -2624,6 +2825,34 @@ function getPlayerAssists(
 }
 
 
+function getDailyPlayerRoleSeconds(match, playerId, role) {
+
+    let total = 0;
+
+    getMatches().forEach(function (historicalMatch) {
+        if (historicalMatch.date !== match.date) return;
+
+        total += getPlayerRoleSeconds(
+            historicalMatch,
+            playerId,
+            role
+        );
+    });
+
+    total += getPlayerRoleSeconds(match, playerId, role);
+
+    return total;
+}
+
+
+function getDailyPlayerSeconds(match, playerId) {
+    return (
+        getDailyPlayerRoleSeconds(match, playerId, "outfield") +
+        getDailyPlayerRoleSeconds(match, playerId, "goalkeeper")
+    );
+}
+
+
 function renderLiveStats() {
 
     const match =
@@ -2651,14 +2880,14 @@ function renderLiveStats() {
         players.map(function (player) {
 
             const totalSeconds =
-                getPlayerSecondsPlayed(
+                getDailyPlayerSeconds(
                     match,
                     player.id
                 );
 
 
             const outfieldSeconds =
-                getPlayerRoleSeconds(
+                getDailyPlayerRoleSeconds(
                     match,
                     player.id,
                     "outfield"
@@ -2666,7 +2895,7 @@ function renderLiveStats() {
 
 
             const goalkeeperSeconds =
-                getPlayerRoleSeconds(
+                getDailyPlayerRoleSeconds(
                     match,
                     player.id,
                     "goalkeeper"
@@ -3001,108 +3230,131 @@ function downloadCSV(match) {
         "Opponent",
         "Score",
         "Player",
+        "Selected",
+        "Total Minutes in Match",
+        "Starting",
         "Minutes Played",
-        "Outfield Minutes",
         "Goalkeeper Minutes",
+        "Outfield Minutes",
         "Goals",
         "Assists",
-        "Starting",
-        "Goalkeeper",
         "Captain"
 
     ]);
 
 
-    match.matchdaySquad.forEach(
-        function (playerId) {
+    const players = getPlayers();
 
-            const goals =
-                getPlayerGoals(
-                    match,
-                    playerId
-                );
+    const selectedPlayers =
+        new Set(match.matchdaySquad || []);
 
 
-            const assists =
-                getPlayerAssists(
-                    match,
-                    playerId
-                );
+    // Export every player in the main player list so that the
+    // Selected column is useful as a 1/0 indicator.
+    players.forEach(function (player) {
 
+        const playerId = player.id;
 
-            const totalSeconds =
-                getPlayerSecondsPlayed(
-                    match,
-                    playerId
-                );
-
-
-            const outfieldSeconds =
-                getPlayerRoleSeconds(
-                    match,
-                    playerId,
-                    "outfield"
-                );
-
-
-            const goalkeeperSeconds =
-                getPlayerRoleSeconds(
-                    match,
-                    playerId,
-                    "goalkeeper"
-                );
-
-
-            rows.push([
-
-                match.date,
-
-                match.opponent,
-
-                match.score.us +
-                    " - " +
-                    match.score.them,
-
-                getPlayerName(
-                    playerId
-                ),
-
-                formatTime(
-                    totalSeconds
-                ),
-
-                formatTime(
-                    outfieldSeconds
-                ),
-
-                formatTime(
-                    goalkeeperSeconds
-                ),
-
-                goals,
-
-                assists,
-
-                match.startingFive.includes(
-                    playerId
-                )
-                    ? "Yes"
-                    : "No",
-
-                match.goalkeeper ===
+        const goals =
+            getPlayerGoals(
+                match,
                 playerId
-                    ? "Yes"
-                    : "No",
+            );
 
-                match.captain ===
+
+        const assists =
+            getPlayerAssists(
+                match,
                 playerId
-                    ? "Yes"
-                    : "No"
+            );
 
-            ]);
 
-        }
-    );
+        const totalSeconds =
+            getPlayerSecondsPlayed(
+                match,
+                playerId
+            );
+
+
+        const outfieldSeconds =
+            getPlayerRoleSeconds(
+                match,
+                playerId,
+                "outfield"
+            );
+
+
+        const goalkeeperSeconds =
+            getPlayerRoleSeconds(
+                match,
+                playerId,
+                "goalkeeper"
+            );
+
+
+        const totalMatchMinutes =
+            Number(
+                ((Number(match.elapsedSeconds) || 0) / 60).toFixed(1)
+            );
+
+
+        const minutesPlayed =
+            Number(
+                (totalSeconds / 60).toFixed(1)
+            );
+
+
+        const goalkeeperMinutes =
+            Number(
+                (goalkeeperSeconds / 60).toFixed(1)
+            );
+
+
+        const outfieldMinutes =
+            Number(
+                (outfieldSeconds / 60).toFixed(1)
+            );
+
+
+        rows.push([
+
+            match.date,
+
+            match.opponent,
+
+            match.score.us +
+                " - " +
+                match.score.them,
+
+            player.name,
+
+            selectedPlayers.has(playerId)
+                ? 1
+                : 0,
+
+            totalMatchMinutes,
+
+            match.startingFive.includes(playerId)
+                ? 1
+                : 0,
+
+            minutesPlayed,
+
+            goalkeeperMinutes,
+
+            outfieldMinutes,
+
+            goals,
+
+            assists,
+
+            match.captain === playerId
+                ? 1
+                : 0
+
+        ]);
+
+    });
 
 
     const csv =
@@ -3436,6 +3688,22 @@ function renderHistoryMatch(match) {
     }
 
 
+    const opponentGoalEvents =
+        match.events.filter(function (event) {
+            return event.type === "opponentGoal";
+        });
+
+
+    if (opponentGoalEvents.length > 0) {
+
+        summary +=
+            (summary ? "<br>" : "") +
+            "<strong>Opponent goals:</strong> " +
+            opponentGoalEvents.length;
+
+    }
+
+
     if (
         substitutionEvents.length > 0
     ) {
@@ -3450,13 +3718,15 @@ function renderHistoryMatch(match) {
             substitutionEvents.map(
                 function (event) {
 
+                    const arrow = event.swap ? " ⇄ " : " → ";
+
                     return (
                         escapeHtml(
                             getPlayerName(
                                 event.playerOff
                             )
                         ) +
-                        " → " +
+                        arrow +
                         escapeHtml(
                             getPlayerName(
                                 event.playerOn
@@ -3618,6 +3888,23 @@ function migrateMatchIfNecessary(
         match.currentGoalkeeperId = match.goalkeeper || null;
     }
 
+    if (typeof match.halfElapsedSeconds !== "number") {
+        if (match.half === 2) {
+            const halfTimeEvent = (match.events || []).find(function (event) {
+                return event.type === "halfTime";
+            });
+
+            match.halfElapsedSeconds =
+                Math.max(
+                    0,
+                    (match.elapsedSeconds || 0) -
+                    (halfTimeEvent ? (halfTimeEvent.elapsedSeconds || 0) : 0)
+                );
+        } else {
+            match.halfElapsedSeconds = match.elapsedSeconds || 0;
+        }
+    }
+
 
     /* Add role properties to old intervals */
 
@@ -3748,6 +4035,20 @@ function setupEventListeners() {
         .addEventListener(
             "click",
             openGoalPanel
+        );
+
+
+    $("opponentGoalBtn")
+        .addEventListener(
+            "click",
+            recordOpponentGoal
+        );
+
+
+    $("copyLastSquadBtn")
+        .addEventListener(
+            "click",
+            copyLastMatchdaySquad
         );
 
 
