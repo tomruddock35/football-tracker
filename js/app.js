@@ -333,11 +333,11 @@ function renderHome() {
 
         (match.events || []).forEach(function (event) {
 
-            if (event.type === "goal") {
+            if (event.type === "goal" || event.type === "ownGoal") {
 
                 goalCount += 1;
 
-                if (event.assist) {
+                if (event.type === "goal" && event.assist) {
                     assistCount += 1;
                 }
 
@@ -1708,6 +1708,33 @@ function renderAssistButtons() {
 }
 
 
+function recordOppositionOwnGoal() {
+
+    const match = getCurrentMatch();
+
+    if (!match || match.finished) return;
+
+    if (!match.running) {
+        alert("Resume the match before recording a goal.");
+        return;
+    }
+
+    // An opposition own goal is awarded to our team. No player
+    // in our squad receives a goal or assist credit.
+    match.score.us += 1;
+
+    match.events.push({
+        id: generateId(),
+        type: "ownGoal",
+        elapsedSeconds: match.elapsedSeconds
+    });
+
+    saveCurrentMatch(match);
+    closeGoalPanel();
+    renderLiveMatch();
+}
+
+
 function recordOpponentGoal() {
 
     const match = getCurrentMatch();
@@ -2749,6 +2776,19 @@ function undoLastEvent() {
     }
 
     if (
+        event.type === "ownGoal"
+    ) {
+
+        match.score.us =
+            Math.max(
+                0,
+                match.score.us - 1
+            );
+
+    }
+
+
+    if (
         event.type === "opponentGoal"
     ) {
 
@@ -3688,6 +3728,19 @@ function renderHistoryMatch(match) {
     }
 
 
+    const ownGoalEvents =
+        match.events.filter(function (event) {
+            return event.type === "ownGoal";
+        });
+
+    if (ownGoalEvents.length > 0) {
+        summary +=
+            (summary ? "<br>" : "") +
+            "<strong>Opposition own goals:</strong> " +
+            ownGoalEvents.length;
+    }
+
+
     const opponentGoalEvents =
         match.events.filter(function (event) {
             return event.type === "opponentGoal";
@@ -4042,6 +4095,13 @@ function setupEventListeners() {
         .addEventListener(
             "click",
             recordOpponentGoal
+        );
+
+
+    $("oppositionOwnGoalBtn")
+        .addEventListener(
+            "click",
+            recordOppositionOwnGoal
         );
 
 
